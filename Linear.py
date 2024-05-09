@@ -39,7 +39,7 @@ class Matrix:
         return cls(vector.rows,1,[[val] for val in vector])
     
     @classmethod
-    def colsToMatrix(cls, basis): #TODO: finish, test
+    def colsToMatrix(cls, basis):
         
         if any(not isinstance(col,Vector) for col in basis): raise TypeError("Basis must be a set of vector objects")
         
@@ -50,9 +50,8 @@ class Matrix:
         if not ogCol: raise ValueError("You would create a null matrix or some shit, nuh uh") 
         
         if any(len(col) != len(ogCol) for col in basis): raise ValueError("All vectors must be of same length")
-        # TODO: change to pad with zeros
         
-        ret = cls(len(ogCol),len(basis)) # should this work? or just Matrix()
+        ret = cls(len(ogCol),len(basis))
         
         
         for col in basis:
@@ -99,6 +98,16 @@ class Matrix:
         """Retursn num'th row (idx starts at 0) as a vector"""
         if num<0 or num >= self.rows: raise ValueError(f"Cannot retrieve row {num} of given Matrix; out of bounds error")
         return Vector(*self.data[num][:]).transpose()#should I transpose?
+    
+    def allRows(self):#TODO: implement
+        """Returns set of all row vectors in self"""
+        pass
+    
+    def allCols(self):#TODO: implement
+        """Returns set of all column vectors in matrix self"""
+        pass
+    
+    
     
     def getPivots(self):
         """Returns list of leading entry coordinates of the matrix if there are any"""
@@ -409,9 +418,11 @@ class Matrix:
         """Returns Matrix from the combination of NulBasis Vectors"""
         pass
     
+    
+    
     def ColMatrix(self):#TODO
         """Returns Matrix from the combination of ColBasis Vectors"""
-        sCols = self.ColBasis() # set of cols to create matrix
+        return Matrix.colsToMatrix(self.ColBasis())
         
         
     
@@ -585,12 +596,14 @@ class Vector(Matrix): # subclass of Matrix class
     def __repr__(self):
         return str(self)
     
-    def __getitem__(self, idx):# TODO
-        pass
+    def __getitem__(self, idx):# TODO: test
+        if not (0 <= idx < len(self.vals)): raise ValueError(f"Trying to manipulate {idx}'th entry of Vector {self}")
+        return self.vals[idx]
     
-    def __setitem__(self,idx, val):# TODO
-        pass
-
+    def __setitem__(self,idx, val):# TODO: test
+        if not (0 <= idx < len(self.vals)): raise ValueError(f"Trying to manipulate {idx}'th entry of Vector {self}")
+        self.vals[idx] = val
+        self.data[idx][0] = val
 
 
     def __add__(self,other):
@@ -832,8 +845,11 @@ if __name__ == '__main__balls':#won't run until I remove balls haha
     s = {Vector(1,-1,-1,1,1), Vector(4,1,6,-6,4), Vector(6,-8,-6,9,1)}
     r = Vector.gramSchmidt(s)
     print(r)
-
-
+    
+M = Matrix(4,3,[[1,2,4],[2,5,8],[3,8,12],[4,11,16]])
+print(M.allCols())
+print(M.allRows())
+print(M.ColMatrix())
 
 # A = Matrix(4,5,[[1,-6,4,4,9],[0,0,-1,-4,-3],[0,0,1,4,3],[1,6,-2,1,-3]])
 # print(A)
