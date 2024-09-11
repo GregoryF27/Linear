@@ -589,8 +589,9 @@ class Vector(Matrix): # subclass of Matrix class
         vals = [round(val,6) for val in self.vals]
         return "<" + ''.join(str(vals))[1:-1] + ">"
     
-    def __abs__(self):
-        return math.sqrt(sum(val**2 for val in self.vals))
+    def __abs__(self): #for norm 
+        """Defaults to 2-norm of vector"""
+        return self.norm()
 
     
     def __repr__(self):
@@ -714,6 +715,26 @@ class Vector(Matrix): # subclass of Matrix class
             ret.append(v)
             
         return ret
+
+    def norm(self, method=2):
+        """
+        Returns the norm of the Vector self, of type method
+        :param: method - accepts 'f' (Frobenius), any nonnegative integer, or 'inf' (infinity)"""
+        # if not ((isinstance(method, int) and method>=0) or (isinstance(method,str) and method=='f') or (isinstance(method, float) and method==float('inf'))):
+        #     raise TypeError(f"method parameter {method} must be nonnegative integer, infinity, or f")
+        
+        match method:
+            case 'inf':
+                print(self.vals)
+                return max(self.vals)
+            case 'f':
+                return -1 #frobenius norm; extension of 2 norm to matrices
+            case '0'|0:
+                return sum([1 if val!=0 else 0 for val in self.vals])
+            
+            case _: 
+                return math.pow(sum((abs(val))**method for val in self.vals),(1/method)) 
+            
 
     
     
@@ -846,13 +867,21 @@ if __name__ == '__main__balls':#won't run until I remove balls haha
     r = Vector.gramSchmidt(s)
     print(r)
     
-M = Matrix(4,3,[[1,2,4],[2,5,8],[3,8,12],[4,11,16]])
-print(M.allCols())
-print(M.allRows())
-print(M.ColMatrix())
-
-# A = Matrix(4,5,[[1,-6,4,4,9],[0,0,-1,-4,-3],[0,0,1,4,3],[1,6,-2,1,-3]])
-# print(A)
-# print(A.rref())
+    M = Matrix(4,3,[[1,2,4],[2,5,8],[3,8,12],[4,11,16]])
+    print(M.allCols())
+    print(M.allRows())
+    print(M.ColMatrix())
 
 
+x = Vector(0,.2,1, 2.2)
+
+x1 = Vector(0.7, 0.2, 0.5, 2)
+x2 = Vector(0,1,1.5,2.2)
+x3 = Vector(0.8,0.1,1.2, 2)
+vectors = [x1, x2, x3]
+for vector in vectors:
+    diff = x-vector
+    print(f'0-norm is {diff.norm(method=0)}')
+    print(f'1-norm is {diff.norm(method=1)}')
+    print(f'2-norm is {diff.norm(method=2)}')
+    print(f'infinity-norm is {diff.norm(method="inf")}')
